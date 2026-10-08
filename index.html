@@ -2,257 +2,213 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#000000">
 <title>Follower Check</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#000;--card:#121212;--line:#262626;--field:#1c1c1c;--txt:#f5f5f5;--sub:#a8a8a8;--blue:#0095f6;--blue-h:#1877f2}
+:root{--card:#121212;--line:#262626;--sub:#a8a8a8;--blue:#0095f6}
 *{box-sizing:border-box}
-html,body{margin:0}
-body{background:var(--bg);color:var(--txt);font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;padding-bottom:env(safe-area-inset-bottom)}
-.hide{display:none!important}
-.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:env(safe-area-inset-top) 16px 0}
-.top-in{max-width:470px;margin:auto;height:54px;display:flex;align-items:center;justify-content:space-between}
-.logo{font-family:'Grand Hotel',cursive;font-size:30px;line-height:1}
-.tbtn{background:none;border:0;color:var(--blue);font:600 14px inherit;font-family:inherit;padding:8px 6px;cursor:pointer}
-.wrap{max-width:470px;margin:auto;padding:16px 12px 40px;display:grid;gap:12px}
-.panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:12px}
-.center{text-align:center}
-.center .logo{font-size:44px;margin:8px 0}
-h2{margin:0;font-size:16px;font-weight:600}
-label{font-weight:600}
-input[type=text],input[type=url],input[type=password],input:not([type]),select{width:100%;background:var(--field);border:1px solid #363636;border-radius:8px;padding:11px 12px;color:var(--txt);font:16px inherit;font-family:inherit}
-input::placeholder{color:#737373}
-input:focus,select:focus{outline:none;border-color:#737373}
-.btn{width:100%;background:var(--blue);color:#fff;border:0;border-radius:8px;padding:10px 16px;font:600 14px inherit;font-family:inherit;cursor:pointer}
-.btn:hover{background:var(--blue-h)}
-.btn.sec{background:#363636}
-.btn.sec:hover{background:#4a4a4a}
-.btn:disabled{opacity:.55;cursor:default}
-.btn:focus-visible,.tbtn:focus-visible,.tab:focus-visible,a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
-.note{color:var(--sub);font-size:12px;margin:0}
-.tabs{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--line);margin:-4px -16px 0}
-.tab{background:none;border:0;border-bottom:1px solid transparent;margin-bottom:-1px;padding:8px 4px 10px;color:var(--sub);font-family:inherit;cursor:pointer;display:grid;gap:0}
-.tab b{font-size:18px;font-weight:600}
-.tab span{font-size:12px}
-.tab[aria-selected="true"]{color:var(--txt);border-bottom-color:var(--txt)}
-#list{list-style:none;margin:0;padding:0;max-height:55vh;overflow-y:auto}
-.row{display:flex;align-items:center;gap:12px;padding:8px 0;color:inherit;text-decoration:none}
-.row:hover .nm{text-decoration:underline}
-.ring{flex:none;width:48px;height:48px;border-radius:50%;padding:2px;background:linear-gradient(45deg,#feda75,#fa7e1e,#d62976,#962fbf,#4f5bd5);display:grid;place-items:center}
-.ring i{width:100%;height:100%;border-radius:50%;background:#262626;border:2px solid #000;display:grid;place-items:center;font-style:normal;font-weight:600;font-size:16px;text-transform:uppercase}
-.nm{font-weight:600;word-break:break-all}
-.sb{color:var(--sub);font-size:12px}
-.empty{padding:28px 0;text-align:center;color:var(--sub)}
-.warn{background:rgba(245,158,11,.12);border:1px solid #f59e0b;color:#fbbf24;border-radius:8px;padding:10px 12px;font-weight:600;font-size:13px}
-.chat{border-color:#3a2a10}
-input[type=range]{width:100%;accent-color:var(--blue)}
-#toast{position:fixed;left:12px;right:12px;bottom:calc(16px + env(safe-area-inset-bottom));max-width:446px;margin:auto;background:#262626;border:1px solid #363636;border-radius:10px;padding:12px 14px;z-index:9;box-shadow:0 4px 20px rgba(0,0,0,.6)}
+body{margin:0;background:#000;color:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:15px;line-height:1.5;padding:env(safe-area-inset-top) 12px 40px}
+main{max-width:470px;margin:auto;display:grid;gap:12px;padding-top:16px}
+h1{margin:0;font-size:24px}
+h2{margin:0 0 8px;font-size:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px}
+ol{margin:0;padding-left:20px;display:grid;gap:6px}
+p{margin:0 0 8px}
+.sub{color:var(--sub);font-size:13px}
+textarea{width:100%;height:70px;background:#1c1c1c;color:#f5f5f5;border:1px solid #363636;border-radius:8px;padding:8px;font-family:monospace;font-size:12px;margin:8px 0}
+button{width:100%;background:var(--blue);color:#fff;border:0;border-radius:8px;padding:11px;font-weight:600;font-size:15px;font-family:inherit}
+button:focus-visible{outline:2px solid #fff;outline-offset:2px}
 </style>
 </head>
 <body>
+<main>
+  <h1>Follower Check</h1>
+  <p class="sub">Runs inside your own logged-in Instagram tab. No password is entered here and nothing is sent to any server.</p>
 
-<header class="top">
-  <div class="top-in">
-    <span class="logo">Follower Check</span>
-    <div>
-      <button id="logoutBtn" class="tbtn hide">Log out</button>
-      <button id="settingsBtn" class="tbtn" aria-label="Backend server settings">Server</button>
-    </div>
-  </div>
-</header>
-
-<main class="wrap">
-
-  <section id="settings" class="panel hide">
-    <label for="apiBase">Backend URL</label>
-    <input id="apiBase" type="url" placeholder="https://follower-check.onrender.com" autocomplete="off">
-    <button id="saveSettings" class="btn">Save backend URL</button>
+  <section class="card">
+    <h2>Step 1: Copy the tool (once)</h2>
+    <button id="copy">Copy the tool</button>
+    <textarea id="code" readonly aria-label="Tool code"></textarea>
+    <p class="sub" id="msg"></p>
   </section>
 
-  <section id="loginCard" class="panel center">
-    <div class="logo">Follower Check</div>
-    <input id="u" placeholder="Instagram username" autocomplete="username" autocapitalize="none" autocorrect="off">
-    <input id="p" type="password" placeholder="Password" autocomplete="current-password">
-    <button id="loginBtn" class="btn">Log in</button>
-    <p class="note">Your password goes to your own backend once and is never stored. Only an encrypted session is saved, so you stay logged in.</p>
+  <section class="card">
+    <h2>Step 2: Save it as a bookmark (once)</h2>
+    <ol>
+      <li><b>Chrome on Android:</b> tap the menu, then the star to bookmark this page. Open Bookmarks, long-press it, choose Edit, rename it to <b>Follower Check</b>, and paste the copied code into the URL box.</li>
+      <li><b>Safari on iPhone:</b> tap Share, then Add Bookmark. Open Bookmarks, tap Edit, tap the bookmark, rename it <b>Follower Check</b>, and paste the code into the address.</li>
+      <li><b>Computer:</b> bookmark this page, edit it, and paste the code into the URL.</li>
+    </ol>
   </section>
 
-  <section id="app" class="hide" style="display:grid;gap:12px">
-    <button id="analyzeBtn" class="btn">Analyze my followers</button>
-
-    <div id="results" class="panel hide">
-      <div role="tablist" class="tabs">
-        <button role="tab" class="tab" data-tab="nonFollowers"><b id="c-nonFollowers">0</b><span>Non-Followers</span></button>
-        <button role="tab" class="tab" data-tab="mutuals"><b id="c-mutuals">0</b><span>Mutual Friends</span></button>
-        <button role="tab" class="tab" data-tab="fans"><b id="c-fans">0</b><span>Fans</span></button>
-      </div>
-      <input id="filter" placeholder="Search" autocomplete="off">
-      <ul id="list"></ul>
-    </div>
-
-    <div class="panel chat">
-      <h2>Targeted chat unsend</h2>
-      <div class="warn">Use in moderation. Unsending too many messages too fast can get your account rate-limited.</div>
-      <button id="loadThreads" class="btn sec">Load my chats</button>
-      <select id="threadSelect" class="hide"></select>
-      <label for="threadId">Target Thread ID</label>
-      <input id="threadId" placeholder="Thread ID" autocomplete="off">
-      <label for="count">Messages to unsend: <output id="countOut">5</output></label>
-      <input id="count" type="range" min="1" max="10" value="5">
-      <button id="unsendBtn" class="btn">Unsend my latest messages</button>
-      <p class="note">Only your own messages are removed, newest first, with a 4 to 8 second pause between each.</p>
-    </div>
+  <section class="card">
+    <h2>Step 3: Use it</h2>
+    <ol>
+      <li>Open <b>instagram.com</b> in Chrome or Safari, not inside the Instagram app, and log in normally.</li>
+      <li>On the Instagram page, run the bookmark. On Chrome Android, type <b>Follower Check</b> in the address bar and tap the bookmark suggestion. On iPhone, open Bookmarks and tap it. On a computer, click it in the bookmarks bar.</li>
+      <li>Wait while it reads your lists, about a minute for large accounts. Then use the Non-Followers, Mutual Friends and Fans tabs. Tap any name to open the profile.</li>
+    </ol>
   </section>
 </main>
 
-<p id="toast" class="hide" role="status"></p>
-
 <script>
-const $ = (s) => document.querySelector(s);
-
-let baseUrl = localStorage.getItem('node_api_bridge_url') || 'https://follower-check.onrender.com';
-let token = localStorage.getItem('node_api_token') || '';
-let username = localStorage.getItem('node_api_user') || '';
-let currentData = null;
-let currentTab = 'nonFollowers';
-
-const save = (k, v) => { try { v === null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} };
-const LABELS = {
-  nonFollowers: "Doesn't follow you back",
-  mutuals: 'Follows each other',
-  fans: "Follows you, you don't follow back",
-};
-
-function toast(msg, bad) {
-  const t = $('#toast');
-  t.textContent = msg;
-  t.style.color = bad ? '#ff7b86' : '#f5f5f5';
-  t.classList.remove('hide');
-  clearTimeout(toast.id);
-  toast.id = setTimeout(() => t.classList.add('hide'), 6000);
-}
-
-async function api(path, body = {}) {
-  let res;
-  try {
-    res = await fetch(baseUrl.replace(/\/+$/, '') + path, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
-      body: JSON.stringify({ username, ...body }),
-    });
-  } catch { throw new Error("Can't reach the backend. Free servers sleep; wait 30 seconds and retry."); }
-  const j = await res.json().catch(() => ({}));
-  if (res.status === 401 || res.status === 404) showLogin();
-  if (!res.ok || j.success === false) throw new Error(j.error || 'Request failed (' + res.status + ')');
-  return j;
-}
-
-async function run(btn, label, fn) {
-  const old = btn.textContent;
-  btn.disabled = true; btn.textContent = label;
-  try { await fn(); } catch (e) { toast(e.message, true); }
-  btn.disabled = false; btn.textContent = old;
-}
-
-function showLogin() { $('#loginCard').classList.remove('hide'); $('#app').classList.add('hide'); $('#logoutBtn').classList.add('hide'); }
-function showApp() { $('#loginCard').classList.add('hide'); $('#app').classList.remove('hide'); $('#logoutBtn').classList.remove('hide'); }
-
-function render() {
-  if (!currentData) return;
-  $('#results').classList.remove('hide');
-  ['nonFollowers', 'mutuals', 'fans'].forEach((k) => ($('#c-' + k).textContent = currentData[k].length));
-  document.querySelectorAll('.tab').forEach((b) => b.setAttribute('aria-selected', b.dataset.tab === currentTab));
-  const q = $('#filter').value.trim().toLowerCase();
-  const wl = new Set(currentData.whitelist || []);
-  const ul = $('#list');
-  ul.replaceChildren();
-  const rows = currentData[currentTab].filter((n) => n.toLowerCase().includes(q));
-  if (!rows.length) {
-    const li = document.createElement('li');
-    li.className = 'empty';
-    li.textContent = 'No accounts here.';
-    ul.append(li);
+function run() {
+  if (!/(^|\.)instagram\.com$/.test(location.hostname)) {
+    alert('Open instagram.com and log in first, then run Follower Check again.');
+    return;
   }
-  rows.forEach((name) => {
-    const li = document.createElement('li');
-    const a = document.createElement('a');
-    a.className = 'row';
-    a.href = 'https://instagram.com/' + encodeURIComponent(name);
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-    const ring = document.createElement('span');
-    ring.className = 'ring';
-    const i = document.createElement('i');
-    i.textContent = name.charAt(0);
-    ring.append(i);
-    const box = document.createElement('div');
-    const nm = document.createElement('div');
-    nm.className = 'nm';
-    nm.textContent = name;
-    const sb = document.createElement('div');
-    sb.className = 'sb';
-    sb.textContent = LABELS[currentTab] + (wl.has(name) ? ' · Whitelisted' : '');
-    box.append(nm, sb);
-    a.append(ring, box);
-    li.append(a);
-    ul.append(li);
+  var m = document.cookie.match(/(?:^|; )ds_user_id=(\d+)/);
+  if (!m) {
+    alert('You are not logged in. Log in to Instagram, then run Follower Check again.');
+    return;
+  }
+  var id = m[1];
+  var old = document.getElementById('fc-host');
+  if (old) old.remove();
+  var host = document.createElement('div');
+  host.id = 'fc-host';
+  host.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:2147483647;background:#000';
+  var root = host.attachShadow({ mode: 'open' });
+  root.innerHTML = `
+<style>
+*{box-sizing:border-box}
+.box{height:100%;max-width:470px;margin:auto;display:flex;flex-direction:column;color:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.4}
+.top{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #262626}
+.top b{font-size:18px}
+button{background:none;border:0;color:#0095f6;font-weight:600;font-size:14px;font-family:inherit;padding:6px}
+#st{padding:28px 16px;text-align:center;color:#a8a8a8}
+#main{display:none;flex:1;flex-direction:column;min-height:0}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid #262626}
+.t{color:#a8a8a8;border-bottom:1px solid transparent;padding:8px 2px 10px;display:grid}
+.t b{font-size:18px;font-weight:600}
+.t span{font-size:12px}
+.t.on{color:#f5f5f5;border-bottom-color:#f5f5f5}
+#q{margin:10px 16px;background:#1c1c1c;border:1px solid #363636;border-radius:8px;padding:10px 12px;color:#f5f5f5;font-size:16px}
+#list{list-style:none;margin:0;padding:0 16px 24px;overflow-y:auto;flex:1}
+a{display:flex;align-items:center;gap:12px;padding:8px 0;color:#f5f5f5;text-decoration:none;font-weight:600;word-break:break-all}
+.av{flex:none;width:44px;height:44px;border-radius:50%;background:linear-gradient(45deg,#feda75,#fa7e1e,#d62976,#962fbf,#4f5bd5);padding:2px}
+.av i{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;background:#262626;border:2px solid #000;font-style:normal;text-transform:uppercase}
+.empty{padding:28px 0;text-align:center;color:#a8a8a8}
+</style>
+<div class="box">
+  <div class="top"><b>Follower Check</b><button id="x">Close</button></div>
+  <div id="st">Starting…</div>
+  <div id="main">
+    <div class="tabs">
+      <button class="t" data-t="nonFollowers"><b id="c-nonFollowers">0</b><span>Non-Followers</span></button>
+      <button class="t" data-t="mutuals"><b id="c-mutuals">0</b><span>Mutual Friends</span></button>
+      <button class="t" data-t="fans"><b id="c-fans">0</b><span>Fans</span></button>
+    </div>
+    <input id="q" placeholder="Search" autocomplete="off">
+    <ul id="list"></ul>
+  </div>
+</div>`;
+  document.body.appendChild(host);
+
+  var $ = function (s) { return root.querySelector(s); };
+  var data = null;
+  var tab = 'nonFollowers';
+
+  $('#x').onclick = function () { host.remove(); };
+
+  async function readAll(kind, label) {
+    var out = [];
+    var max = '';
+    for (;;) {
+      var url = '/api/v1/friendships/' + id + '/' + kind + '/?count=100' + (max ? '&max_id=' + encodeURIComponent(max) : '');
+      var r = await fetch(url, {
+        credentials: 'include',
+        headers: { 'X-IG-App-ID': '936619743392459', 'X-Requested-With': 'XMLHttpRequest' }
+      });
+      if (!r.ok) {
+        throw new Error(r.status === 429
+          ? 'Instagram asked us to slow down. Wait a few minutes and try again.'
+          : 'Instagram returned an error (' + r.status + '). Try again later.');
+      }
+      var j = await r.json();
+      (j.users || []).forEach(function (u) { out.push(u.username); });
+      $('#st').textContent = label + ' ' + out.length;
+      if (!j.next_max_id) break;
+      max = j.next_max_id;
+      await new Promise(function (z) { setTimeout(z, 1200 + Math.random() * 1000); });
+    }
+    return out;
+  }
+
+  function draw() {
+    var q = $('#q').value.trim().toLowerCase();
+    ['nonFollowers', 'mutuals', 'fans'].forEach(function (k) {
+      $('#c-' + k).textContent = data[k].length;
+      $('[data-t="' + k + '"]').classList.toggle('on', k === tab);
+    });
+    var ul = $('#list');
+    ul.replaceChildren();
+    var rows = data[tab].filter(function (n) { return n.toLowerCase().includes(q); });
+    if (!rows.length) {
+      var e = document.createElement('li');
+      e.className = 'empty';
+      e.textContent = 'No accounts here.';
+      ul.append(e);
+    }
+    rows.forEach(function (n) {
+      var li = document.createElement('li');
+      var a = document.createElement('a');
+      a.href = 'https://instagram.com/' + encodeURIComponent(n);
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      var av = document.createElement('span');
+      av.className = 'av';
+      var i = document.createElement('i');
+      i.textContent = n.charAt(0);
+      av.append(i);
+      var t = document.createElement('span');
+      t.textContent = n;
+      a.append(av, t);
+      li.append(a);
+      ul.append(li);
+    });
+  }
+
+  root.querySelectorAll('.t').forEach(function (b) {
+    b.onclick = function () { tab = b.dataset.t; draw(); };
   });
+  $('#q').oninput = draw;
+
+  (async function () {
+    try {
+      var following = await readAll('following', 'Reading who you follow…');
+      var followers = await readAll('followers', 'Reading your followers…');
+      var fs = new Set(followers);
+      var gs = new Set(following);
+      data = {
+        nonFollowers: following.filter(function (u) { return !fs.has(u); }),
+        mutuals: following.filter(function (u) { return fs.has(u); }),
+        fans: followers.filter(function (u) { return !gs.has(u); })
+      };
+      $('#st').style.display = 'none';
+      $('#main').style.display = 'flex';
+      draw();
+    } catch (err) {
+      $('#st').textContent = err.message;
+    }
+  })();
 }
 
-$('#settingsBtn').onclick = () => { $('#apiBase').value = baseUrl; $('#settings').classList.toggle('hide'); };
-$('#saveSettings').onclick = () => {
-  const v = $('#apiBase').value.trim().replace(/\/+$/, '');
-  if (!/^https?:\/\//.test(v)) return toast('Enter a full URL starting with https://', true);
-  baseUrl = v; save('node_api_bridge_url', v);
-  $('#settings').classList.add('hide'); toast('Backend URL saved.');
+var code = 'javascript:' + encodeURIComponent('(' + run.toString() + ')()');
+var box = document.getElementById('code');
+box.value = code;
+document.getElementById('copy').onclick = async function () {
+  var msg = document.getElementById('msg');
+  try {
+    await navigator.clipboard.writeText(code);
+    msg.textContent = 'Copied. Now follow step 2.';
+  } catch (e) {
+    box.focus();
+    box.select();
+    msg.textContent = 'Select all in the box above and copy it manually.';
+  }
 };
-
-$('#loginBtn').onclick = () => run($('#loginBtn'), 'Logging in…', async () => {
-  const typed = $('#u').value.trim().toLowerCase().replace(/^@/, '');
-  const j = await api('/api/login', { username: typed, password: $('#p').value });
-  username = typed; token = j.token;
-  save('node_api_user', username); save('node_api_token', token);
-  $('#p').value = '';
-  showApp(); toast(j.message);
-});
-
-$('#logoutBtn').onclick = () => {
-  token = ''; username = ''; currentData = null;
-  save('node_api_user', null); save('node_api_token', null);
-  $('#results').classList.add('hide'); showLogin();
-};
-
-$('#analyzeBtn').onclick = () => run($('#analyzeBtn'), 'Analyzing… this can take a minute', async () => {
-  currentData = await api('/api/analyze'); render();
-});
-
-document.querySelectorAll('.tab').forEach((b) => (b.onclick = () => { currentTab = b.dataset.tab; render(); }));
-$('#filter').oninput = render;
-$('#count').oninput = (e) => ($('#countOut').textContent = e.target.value);
-
-$('#loadThreads').onclick = () => run($('#loadThreads'), 'Loading…', async () => {
-  const { threads } = await api('/api/threads');
-  const sel = $('#threadSelect');
-  sel.replaceChildren(new Option('Pick a chat…', ''));
-  threads.forEach((t) => sel.append(new Option(t.title, t.id)));
-  sel.classList.remove('hide');
-});
-$('#threadSelect').onchange = (e) => ($('#threadId').value = e.target.value);
-
-$('#unsendBtn').onclick = () => {
-  const id = $('#threadId').value.trim(), n = $('#count').value;
-  if (!id) return toast('Enter or pick a Thread ID first.', true);
-  if (!confirm('Unsend your latest ' + n + ' messages in this chat? This cannot be undone.')) return;
-  run($('#unsendBtn'), 'Unsending… keep this page open', async () => {
-    const j = await api('/api/unsend-chat', { targetThreadId: id, messageCount: Number(n) });
-    toast(j.message);
-  });
-};
-
-if (token && username) showApp();
 </script>
 </body>
 </html>
