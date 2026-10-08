@@ -76,6 +76,11 @@ app.post('/api/login', wrap(async (req, res) => {
 
   const ig = new IgApiClient();
   ig.state.generateDevice(username);
+
+  // FIXED: MODERN VERSION SIGNATURE INSERTED HERE TO BYPASS THE 400 BAD REQUEST ERROR
+  ig.state.appVersion = '315.0.0.33.109';
+  ig.state.userAgent = 'Instagram 315.0.0.33.109 Android (29/10; 480dpi; 1080x2280; OnePlus; ONEPLUS A6003; enchilada; qcom; en_US; 564998083)';
+
   await ig.account.login(username, password); // password is never stored
   const session = await ig.state.serialize();
   delete session.constants;
