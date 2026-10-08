@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Follower Check</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: 'Manrope', system-ui, sans-serif; background:#0e1014; color:#e9e7e2; }
+  .card { background:#171a21; border:1px solid #262a34; border-radius:14px; }
+  .inp { background:#0e1014; border:1px solid #2c313d; border-radius:10px; padding:.65rem .8rem; width:100%; color:inherit; }
+  .inp:focus-visible, button:focus-visible, a:focus-visible { outline:2px solid #ff8a6b; outline-offset:2px; }
+  .btn { background:#ff8a6b; color:#1a0d08; font-weight:800; border-radius:10px; padding:.65rem 1rem; }
+  .btn:disabled { opacity:.5; }
+  .ghost { border:1px solid #2c313d; border-radius:10px; padding:.5rem .8rem; }
+  .tab[aria-selected="true"] { background:#262a34; color:#fff; }
+  input[type=range] { accent-color:#ff8a6b; width:100%; }
+  body { padding-top:env(safe-area-inset-top); padding-bottom:env(safe-area-inset-bottom); }
+</style>
+</head>
+<body class="min-h-screen">
+<main class="max-w-xl mx-auto p-4 space-y-4">
+
+  <header class="flex items-center justify-between pt-2">
+    <h1 class="text-2xl font-extrabold">Follower Check</h1>
+    <div class="flex gap-2">
+      <button id="logoutBtn" class="ghost text-sm hidden">Log out</button>
+      <button id="settingsBtn" class="ghost text-sm" aria-label="Backend settings">Settings</button>
+    </div>
+  </header>
+
+  <section id="settings" class="card p-4 space-y-3 hidden">
+    <label class="block text-sm font-semibold" for="apiBase">Backend URL</label>
+    <input id="apiBase" class="inp" type="url" placeholder="https://your-app.onrender.com" autocomplete="off">
+    <button id="saveSettings" class="btn w-full">Save backend URL</button>
+  </section>
+
+  <p id="toast" class="hidden card p-3 text-sm" role="status"></p>
+
+  <section id="loginCard" class="card p-4 space-y-3">
+    <h2 class="font-extrabold">Log in to Instagram</h2>
+    <input id="u" class="inp" placeholder="Instagram username" autocomplete="username" autocapitalize="none">
+    <input id="p" class="inp" type="password" placeholder="Password" autocomplete="current-password">
+    <button id="loginBtn" class="btn w-full">Log in</button>
+    <p class="text-xs text-zinc-400">Your password is sent to your own backend once and never stored. Only an encrypted session is saved, so you stay logged in.</p>
+  </section>
+
+  <section id="app" class="space-y-4 hidden">
+    <button id="analyzeBtn" class="btn w-full">Analyze my followers</button>
+
+    <div id="results" class="card p-3 space-y-3 hidden">
+      <div role="tablist" class="grid grid-cols-3 gap-1 text-sm font-semibold">
+        <button role="tab" class="tab rounded-lg py-2" data-tab="nonFollowers">Non-Followers <span class="block text-xs opacity-70" id="c-nonFollowers"></span></button>
+        <button role="tab" class="tab rounded-lg py-2" data-tab="mutuals">Mutual Friends <span class="block text-xs opacity-70" id="c-mutuals"></span></button>
+        <button role="tab" class="tab rounded-lg py-2" data-tab="fans">Fans <span class="block text-xs opacity-70" id="c-fans"></span></button>
+      </div>
+      <p id="tabHint" class="text-xs text-zinc-400"></p>
+      <input id="filter" class="inp" placeholder="Filter usernames" autocomplete="off">
+      <ul id="list" class="divide-y divide-zinc-800 max-h-[55vh] overflow-y-auto"></ul>
+    </div>
+
+    <div class="card p-4 space-y-3" style="border-color:#7a4a14">
+      <h2 class="font-extrabold">Targeted chat unsend</h2>
+      <p class="text-sm font-bold rounded-lg px-3 py-2" style="background:#f59e0b;color:#2a1600">
+        Use in moderation. Unsending too many messages too fast can get your account rate-limited.
+      </p>
+      <button id="loadThreads" class="ghost text-sm w-full">Load my chats</button>
+      <select id="threadSelect" class="inp hidden"></select>
+      <label class="block text-sm font-semibold" for="threadId">Target Thread ID</label>
+      <input id="threadId" class="inp" placeholder="Thread ID" autocomplete="off">
+      <label class="block text-sm font-semibold" for="count">Messages to unsend: <output id="countOut">5</output></label>
+      <input id="count" type="range" min="1" max="10" value="5">
+      <button id="unsendBtn" class="btn w-full">Unsend my latest messages</button>
+      <p class="text-xs text-zinc-400">Only your own messages are removed, newest first, with a 4–8 second pause between each.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const store = {
+  get: (k) => { try { return localStorage.getItem(k); } catch { return null; } },
+  set: (k, v) => { try { localStorage.setItem(k, v); } catch {} },
+  del: (k) => { try { localStorage.removeItem(k); } catch {} },
+};
+const HINTS = {
+  nonFollowers: "You follow them, they don't follow back.",
+  mutuals: 'You follow each other.',
+  fans: "They follow you, you don't follow back.",
+};
+let data = null, tab = 'nonFollowers';
+
+function toast(msg, bad) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.style.borderColor = bad ? '#b4472f' : '#2f8f6b';
+  t.classList.remove('hidden');
+  clearTimeout(toast.id);
+  toast.id = setTimeout(() => t.classList.add('hidden'), 6000);
+}
+
+async function api(path, body = {}) {
+  const base = (store.get('apiBase') || '').replace(/\/+$/, '');
+  if (!base) { $('#settings').classList.remove('hidden'); throw new Error('Add your backend URL in Settings first.'); }
+  let res;
+  try {
+    res = await fetch(base + path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-auth-token': store.get('token') || '' },
+      body: JSON.stringify({ username: store.get('user'), ...body }),
+    });
+  } catch { throw new Error("Can't reach the backend. Free servers sleep; wait 30 seconds and retry."); }
+  const j = await res.json().catch(() => ({}));
+  if (res.status === 401 || res.status === 404) showLogin();
+  if (!res.ok || j.success === false) throw new Error(j.error || 'Request failed (' + res.status + ')');
+  return j;
+}
+
+async function run(btn, label, fn) {
+  const old = btn.textContent;
+  btn.disabled = true; btn.textContent = label;
+  try { await fn(); } catch (e) { toast(e.message, true); }
+  btn.disabled = false; btn.textContent = old;
+}
+
+function showLogin() { $('#loginCard').classList.remove('hidden'); $('#app').classList.add('hidden'); $('#logoutBtn').classList.add('hidden'); }
+function showApp() { $('#loginCard').classList.add('hidden'); $('#app').classList.remove('hidden'); $('#logoutBtn').classList.remove('hidden'); }
+
+function render() {
+  if (!data) return;
+  $('#results').classList.remove('hidden');
+  ['nonFollowers', 'mutuals', 'fans'].forEach((k) => ($('#c-' + k).textContent = data[k].length));
+  document.querySelectorAll('.tab').forEach((b) => b.setAttribute('aria-selected', b.dataset.tab === tab));
+  $('#tabHint').textContent = HINTS[tab];
+  const q = $('#filter').value.trim().toLowerCase();
+  const wl = new Set(data.whitelist || []);
+  const ul = $('#list');
+  ul.replaceChildren();
+  const rows = data[tab].filter((n) => n.toLowerCase().includes(q));
+  if (!rows.length) {
+    const li = document.createElement('li');
+    li.className = 'py-6 text-center text-sm text-zinc-400';
+    li.textContent = 'No accounts here.';
+    ul.append(li);
+  }
+  rows.forEach((name) => {
+    const li = document.createElement('li');
+    li.className = 'py-3 flex items-center justify-between';
+    const a = document.createElement('a');
+    a.href = 'https://instagram.com/' + encodeURIComponent(name);
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.className = 'font-semibold hover:underline break-all';
+    a.textContent = '@' + name;
+    li.append(a);
+    if (wl.has(name)) {
+      const s = document.createElement('span');
+      s.className = 'text-xs text-zinc-400 ml-2';
+      s.textContent = 'whitelisted';
+      li.append(s);
+    }
+    ul.append(li);
+  });
+}
+
+$('#settingsBtn').onclick = () => { $('#apiBase').value = store.get('apiBase') || ''; $('#settings').classList.toggle('hidden'); };
+$('#saveSettings').onclick = () => {
+  const v = $('#apiBase').value.trim().replace(/\/+$/, '');
+  if (!/^https?:\/\//.test(v)) return toast('Enter a full URL starting with https://', true);
+  store.set('apiBase', v); $('#settings').classList.add('hidden'); toast('Backend URL saved.');
+};
+
+$('#loginBtn').onclick = () => run($('#loginBtn'), 'Logging in…', async () => {
+  const username = $('#u').value.trim().toLowerCase().replace(/^@/, '');
+  const j = await api('/api/login', { username, password: $('#p').value });
+  store.set('user', username); store.set('token', j.token); $('#p').value = '';
+  showApp(); toast(j.message);
+});
+
+$('#logoutBtn').onclick = () => { store.del('user'); store.del('token'); data = null; $('#results').classList.add('hidden'); showLogin(); };
+
+$('#analyzeBtn').onclick = () => run($('#analyzeBtn'), 'Analyzing… this can take a minute', async () => {
+  data = await api('/api/analyze'); render();
+});
+
+document.querySelectorAll('.tab').forEach((b) => (b.onclick = () => { tab = b.dataset.tab; render(); }));
+$('#filter').oninput = render;
+
+$('#count').oninput = (e) => ($('#countOut').textContent = e.target.value);
+
+$('#loadThreads').onclick = () => run($('#loadThreads'), 'Loading…', async () => {
+  const { threads } = await api('/api/threads');
+  const sel = $('#threadSelect');
+  sel.replaceChildren(new Option('Pick a chat…', ''));
+  threads.forEach((t) => sel.append(new Option(t.title, t.id)));
+  sel.classList.remove('hidden');
+});
+$('#threadSelect').onchange = (e) => ($('#threadId').value = e.target.value);
+
+$('#unsendBtn').onclick = () => {
+  const id = $('#threadId').value.trim(), n = $('#count').value;
+  if (!id) return toast('Enter or pick a Thread ID first.', true);
+  if (!confirm('Unsend your latest ' + n + ' messages in this chat? This cannot be undone.')) return;
+  run($('#unsendBtn'), 'Unsending… keep this page open', async () => {
+    const j = await api('/api/unsend-chat', { targetThreadId: id, messageCount: Number(n) });
+    toast(j.message);
+  });
+};
+
+if (store.get('token') && store.get('user')) showApp();
+</script>
+</body>
+</html>
